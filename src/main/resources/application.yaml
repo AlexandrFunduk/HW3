@@ -1,0 +1,22 @@
+spring:
+  jpa:
+    open-in-view: false
+    show-sql: true
+    defer-datasource-initialization: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+        default_batch_fetch_size: 20
+        jdbc.batch_size: 20
+
+  datasource:
+    url: jdbc:h2:./db/data
+    #    remote connection url (for idea or web console) - jdbc:h2:tcp://localhost:9092/./db/data
+    #    web console -  http://localhost:8080/h2-console
+    username: sa
+    password:
+  h2.console.enabled: true
+  sql.init.mode: always
+
