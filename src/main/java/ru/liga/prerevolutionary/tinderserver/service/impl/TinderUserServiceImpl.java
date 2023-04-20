@@ -39,7 +39,6 @@ public class TinderUserServiceImpl implements TinderUserService {
         });
         TinderUser user = reversConverter.convert(tinderUserDto);
         user.setLastFoundUser(user);
-        user.setLastFoundUser(user);
         user.setRegistered(new Date());
         tinderUserRepository.save(user);
         return converter.convert(user);
