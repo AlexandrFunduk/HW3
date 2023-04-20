@@ -13,7 +13,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"chatId\": \"123\",\n    \"name\": \"name\",\n    \"sex\": \"sex\",\n    \"header\": \"header\",\n    \"description\": \"description\",\n    \"preference\": \"preference\"\n}",
+					"raw": "{\n    \"chatId\": \"12\",\n    \"name\": \"55\",\n    \"sex\": \"sex\",\n    \"header\": \"header\",\n    \"description\": \"description\",\n    \"preference\": \"preference\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -41,13 +41,13 @@
 				"header": [
 					{
 						"key": "chatId",
-						"value": "1234",
+						"value": "4",
 						"type": "text"
 					}
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"chatId\": \"123\",\n    \"name\": \"_name\",\n    \"sex\": \"sex\",\n    \"header\": \"_header\",\n    \"description\": \"_description\",\n    \"preference\": \"preference\"\n}",
+					"raw": "{\n    \"chatId\": \"4\",\n    \"name\": \"888\",\n    \"sex\": \"sex\",\n    \"header\": \"_header\",\n    \"description\": \"_description\",\n    \"preference\": \"preference\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -75,7 +75,7 @@
 				"header": [
 					{
 						"key": "chatId",
-						"value": "10",
+						"value": "9",
 						"type": "text"
 					},
 					{
@@ -99,7 +99,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/users/like/{{anotherChatId}}",
+					"raw": "http://localhost:8080/users/actions/like/{{anotherChatId}}",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -107,6 +107,7 @@
 					"port": "8080",
 					"path": [
 						"users",
+						"actions",
 						"like",
 						"{{anotherChatId}}"
 					]
@@ -118,16 +119,23 @@
 			"name": "Get user - возможно нам не нужен",
 			"request": {
 				"method": "GET",
-				"header": [],
+				"header": [
+					{
+						"key": "chatId",
+						"value": "55",
+						"type": "text"
+					}
+				],
 				"url": {
-					"raw": "http://localhost:8080/users",
+					"raw": "http://localhost:8080/users/5",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "8080",
 					"path": [
-						"users"
+						"users",
+						"5"
 					]
 				}
 			},
@@ -140,7 +148,7 @@
 				"header": [
 					{
 						"key": "chatId",
-						"value": "123",
+						"value": "3",
 						"type": "text"
 					}
 				],
@@ -160,18 +168,18 @@
 			"response": []
 		},
 		{
-			"name": "Get next image",
+			"name": "Get next view image",
 			"request": {
 				"method": "GET",
 				"header": [
 					{
 						"key": "chatId",
-						"value": "123",
+						"value": "1",
 						"type": "text"
 					}
 				],
 				"url": {
-					"raw": "http://localhost:8080/users/image/next",
+					"raw": "http://localhost:8080/users/image/view/next",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -180,6 +188,7 @@
 					"path": [
 						"users",
 						"image",
+						"view",
 						"next"
 					]
 				}
@@ -187,18 +196,18 @@
 			"response": []
 		},
 		{
-			"name": "Get previous image",
+			"name": "Get previous view image",
 			"request": {
 				"method": "GET",
 				"header": [
 					{
 						"key": "chatId",
-						"value": "123",
+						"value": "1",
 						"type": "text"
 					}
 				],
 				"url": {
-					"raw": "http://localhost:8080/users/image/previous",
+					"raw": "http://localhost:8080/users/image/view/previous",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -207,11 +216,88 @@
 					"path": [
 						"users",
 						"image",
+						"view",
 						"previous"
 					]
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "Get next search image",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "chatId",
+						"value": "1",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/users/image/search/next",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"users",
+						"image",
+						"search",
+						"next"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get previous search image",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "chatId",
+						"value": "1",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/users/image/search/previous",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"users",
+						"image",
+						"search",
+						"previous"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
 		}
 	],
 	"variable": [

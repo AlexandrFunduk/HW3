@@ -3,9 +3,20 @@ package ru.liga.prerevolutionary.tinderserver.service;
 import ru.liga.prerevolutionary.tinderserver.dto.TinderUserDto;
 
 public interface TinderUserService {
-    void create(TinderUserDto tinderUserDto);
 
-    void update(TinderUserDto tinderUserDto, String chatId);
+    TinderUserDto get(String chatId);
+
+    TinderUserDto create(TinderUserDto tinderUserDto);
+
+    TinderUserDto update(TinderUserDto tinderUserDto, String chatId);
 
     void like(String chatId, String anotherChatId);
+
+    TinderUserDto getNextSearch(String chatId);
+
+    TinderUserDto getPreviousSearch(String chatId);
+
+    TinderUserDto getNextView(String chatId);
+
+    TinderUserDto getPreviousView(String chatId);
 }

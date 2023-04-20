@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import ru.liga.prerevolutionary.tinderserver.dto.ErrorDto;
 import ru.liga.prerevolutionary.tinderserver.exception.DuplicatedEntityException;
+import ru.liga.prerevolutionary.tinderserver.exception.NotAllowRequest;
 import ru.liga.prerevolutionary.tinderserver.exception.NotFoundException;
 
 @Slf4j
@@ -33,6 +34,13 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(DuplicatedEntityException.class)
     public ResponseEntity<?> duplicatedEntityException(Exception ex) {
         log.warn("DuplicatedEntityException", ex);
+        ErrorDto error = new ErrorDto(ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(NotAllowRequest.class)
+    public ResponseEntity<?> NotAllowRequestException(Exception ex) {
+        log.warn("NotAllowRequest", ex);
         ErrorDto error = new ErrorDto(ex.getMessage());
         return new ResponseEntity<>(error, HttpStatus.CONFLICT);
     }

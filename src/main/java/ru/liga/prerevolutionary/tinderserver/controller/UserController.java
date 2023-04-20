@@ -1,44 +1,61 @@
 package ru.liga.prerevolutionary.tinderserver.controller;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import ru.liga.prerevolutionary.tinderserver.dto.TinderUserDto;
+import ru.liga.prerevolutionary.tinderserver.exception.NotAllowRequest;
 import ru.liga.prerevolutionary.tinderserver.service.TinderUserService;
 
 @Slf4j
 @RestController
 @RequestMapping("/users")
 @AllArgsConstructor
+@Valid
 public class UserController {
     private final TinderUserService tinderUserService;
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public void createUser(@RequestBody TinderUserDto user) {
-        log.info("register {}", user);
-        tinderUserService.create(user);
+    public TinderUserDto createUser(@NotNull @RequestBody TinderUserDto dto) {
+        log.info("register {}", dto);
+        return tinderUserService.create(dto);
     }
 
     @PutMapping
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void updateUser(@RequestBody TinderUserDto dto, @RequestHeader("chatId") String chatId) {
+    @ResponseStatus(HttpStatus.OK)
+    public TinderUserDto updateUser(@Valid @RequestBody TinderUserDto dto, @NotBlank @RequestHeader(value = "chatId") String chatId) {
+        validate(dto.getChatId(), chatId);
         log.info("update {} from request with chatId {}", dto, chatId);
-        //validate
-        tinderUserService.update(dto, chatId);
+        return tinderUserService.update(dto, chatId);
     }
 
-    @PostMapping(value = "/like/{anotherChatId}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/actions/like/{anotherChatId}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public void likeUser(@RequestHeader("chatId") String chatId, @PathVariable String anotherChatId) {
-        log.info("like from {} to {}", chatId, anotherChatId);
+    public void likeUser(@NotBlank @RequestHeader(value = "chatId") String chatId, @NotBlank @PathVariable String anotherChatId) {
+        if (chatId.equals(anotherChatId)) {
+            throw new NotAllowRequest("Not allowed to like yourself. ChatId " + chatId);
+        }
         tinderUserService.like(chatId, anotherChatId);
+        log.info("like from {} to {}", chatId, anotherChatId);
     }
 
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public Object getUser() {
-        return new TinderUserDto("123", "name", "sex", "header", "description", "preference");
+    @GetMapping(value = "/{chatId}")
+    public TinderUserDto getUser(@NotBlank @RequestHeader(value = "chatId") String headerChatId, @NotBlank @PathVariable String chatId) {
+        validate(chatId, headerChatId);
+        TinderUserDto tinderUserDto = tinderUserService.get(chatId);
+        log.info("Get user with chatId {}", chatId);
+        return tinderUserDto;
+    }
+
+    private void validate(String chatId, String headerChatId) {
+        if (!headerChatId.equals(chatId)) {
+            throw new NotAllowRequest("Header parameter chatId %s not equals path parameter %s".formatted(headerChatId, chatId));
+        }
     }
 }

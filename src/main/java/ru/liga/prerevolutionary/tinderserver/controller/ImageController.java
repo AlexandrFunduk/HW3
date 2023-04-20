@@ -1,47 +1,70 @@
 package ru.liga.prerevolutionary.tinderserver.controller;
 
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.liga.prerevolutionary.tinderserver.dto.ImageDto;
-
-import java.io.IOException;
-import java.util.Base64;
+import ru.liga.prerevolutionary.tinderserver.dto.TinderUserDto;
+import ru.liga.prerevolutionary.tinderserver.service.LikeService;
+import ru.liga.prerevolutionary.tinderserver.service.TinderUserService;
+import ru.liga.prerevolutionary.tinderserver.service.impl.ImageServiceImpl;
 
 @Slf4j
 @RestController
 @RequestMapping("/users/image")
 @AllArgsConstructor
+@Valid
 public class ImageController {
+    private final ImageServiceImpl imageService;
+    private final TinderUserService tinderUserService;
+    private final LikeService LikeService;
 
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public Object getImage(@RequestHeader("chatId") String chatId) {
-        return tempMock();
+    @GetMapping
+    public ImageDto getImage(@NotBlank @RequestHeader(value = "chatId") String chatId) {
+        ImageDto profile = imageService.getProfile(chatId);
+        log.info("Get profile with chatId {} as image", chatId);
+        return profile;
     }
 
-    @GetMapping(value = "/next", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Object getNext(@RequestHeader("chatId") String chatId) {
-        return tempMock();
+    @GetMapping(value = "/search/next")
+    public ImageDto searchNext(@NotBlank @RequestHeader(value = "chatId") String chatId) {
+        TinderUserDto nextSearch = tinderUserService.getNextSearch(chatId);
+        String relate = LikeService.getRelated(chatId, nextSearch.getChatId());
+        ImageDto form = imageService.getForm(relate, nextSearch);
+        log.info("Get next search for chatId {} as image", chatId);
+        return form;
     }
 
-    @GetMapping(value = "/previous", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Object getPrevious(@RequestHeader("chatId") String chatId) {
-        return tempMock();
+    @GetMapping(value = "/search/previous")
+    public ImageDto searchPrevious(@NotBlank @RequestHeader(value = "chatId") String chatId) {
+        TinderUserDto previousSearch = tinderUserService.getPreviousSearch(chatId);
+        String relate = LikeService.getRelated(chatId, previousSearch.getChatId());
+        ImageDto form = imageService.getForm(relate, previousSearch);
+        log.info("Get previous search for chatId {} as image", chatId);
+        return form;
     }
 
+    @GetMapping(value = "/view/next")
+    public ImageDto viewNext(@NotBlank @RequestHeader("chatId") String chatId) {
+        TinderUserDto nextView = tinderUserService.getNextView(chatId);
+        String relate = LikeService.getRelated(chatId, nextView.getChatId());
+        ImageDto form = imageService.getForm(relate, nextView);
+        log.info("Get next view for chatId {} as image", chatId);
+        return form;
+    }
 
-    private ImageDto tempMock() {
-        String encodedString = null;
-        try {
-            encodedString = Base64.getEncoder().encodeToString(this.getClass().getClassLoader().getResourceAsStream("image/prerev-background.jpg").readAllBytes());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        return new ImageDto(encodedString);
+    @GetMapping(value = "/view/previous")
+    public ImageDto viewPrevious(@NotBlank @RequestHeader("chatId") String chatId) {
+        TinderUserDto previousView = tinderUserService.getPreviousView(chatId);
+        String relate = LikeService.getRelated(chatId, previousView.getChatId());
+        ImageDto form = imageService.getForm(relate, previousView);
+        log.info("Get previous view for chatId {} as image", chatId);
+        return form;
     }
 }

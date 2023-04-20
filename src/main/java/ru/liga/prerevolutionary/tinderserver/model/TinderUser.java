@@ -1,15 +1,13 @@
 package ru.liga.prerevolutionary.tinderserver.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.*;
 
 import java.util.Date;
 
 @Entity
-@Table(name = "tinder_users")
+@Table(name = "TB_TINDER_USER")
 @Getter
 @Setter
 @ToString
@@ -35,4 +33,10 @@ public class TinderUser extends BaseEntity {
     Date registered;
     @Column(name = "updated")
     Date updated;
+    @OneToOne
+    @JoinColumn(name = "last_viewed_id", referencedColumnName = "id")
+    TinderUser lastViewedUser;
+    @OneToOne
+    @JoinColumn(name = "last_found_id", referencedColumnName = "id")
+    TinderUser lastFoundUser;
 }
