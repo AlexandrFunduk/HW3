@@ -72,6 +72,7 @@ public class OldImageBuilder {
 
         try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
             ImageWriter imageWriter = ImageWriterFactory.getImageWriter(ImageType.PNG);
+            //сохраняем для теста, строку ниже нужно удалить
             imageWriter.writeImageToFile(textImage, new File("src/main/resources/image/test.png"));
 
             imageWriter.writeImageToOutputStream(textImage, out);
