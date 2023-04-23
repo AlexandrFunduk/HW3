@@ -1,12 +1,16 @@
 spring:
+  flyway:
+    locations: classpath:db_test/migration
   jpa:
     open-in-view: false
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
         format_sql: true
         default_batch_fetch_size: 20
         jdbc.batch_size: 20
+    hibernate:
+      ddl-auto: none
 
   datasource:
     url: jdbc:h2:mem:db_test;DB_CLOSE_DELAY=-1
