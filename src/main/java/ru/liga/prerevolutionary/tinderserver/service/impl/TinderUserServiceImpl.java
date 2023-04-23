@@ -7,9 +7,7 @@ import ru.liga.prerevolutionary.tinderserver.dto.TinderUserDto;
 import ru.liga.prerevolutionary.tinderserver.dto.converter.Converter;
 import ru.liga.prerevolutionary.tinderserver.exception.DuplicatedEntityException;
 import ru.liga.prerevolutionary.tinderserver.exception.NotFoundException;
-import ru.liga.prerevolutionary.tinderserver.model.Like;
 import ru.liga.prerevolutionary.tinderserver.model.TinderUser;
-import ru.liga.prerevolutionary.tinderserver.repository.LikeRepository;
 import ru.liga.prerevolutionary.tinderserver.repository.TinderUserRepository;
 import ru.liga.prerevolutionary.tinderserver.service.TinderUserService;
 
@@ -21,7 +19,6 @@ import java.util.Optional;
 @AllArgsConstructor
 public class TinderUserServiceImpl implements TinderUserService {
     private final TinderUserRepository tinderUserRepository;
-    private final LikeRepository likeRepository;
     private final Converter<TinderUserDto, TinderUser> reversConverter;
     private final Converter<TinderUser, TinderUserDto> converter;
 
@@ -53,13 +50,6 @@ public class TinderUserServiceImpl implements TinderUserService {
         return converter.convert(updatedTinderUSer);
     }
 
-    @Override
-    public void like(String chatId, String anotherChatId) {
-        TinderUser user = tinderUserRepository.findUserByChatId(chatId).orElseThrow(() -> new NotFoundException("User with chatId %s not found".formatted(chatId)));
-        TinderUser anotherUser = tinderUserRepository.findUserByChatId(anotherChatId).orElseThrow(() -> new NotFoundException("User with chatId %s not found".formatted(anotherChatId)));
-        Like like = new Like(user.getId(), anotherUser.getId());
-        likeRepository.save(like);
-    }
 
     @Override
     public TinderUserDto getNextSearch(String chatId) {

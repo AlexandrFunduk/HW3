@@ -6,4 +6,6 @@ public interface LikeService {
     LikeId getLikeId(String chatId, String anotherChatId);
 
     String getRelated(String chatId, String anotherChatId);
+
+    void like(String chatId, String anotherChatId);
 }

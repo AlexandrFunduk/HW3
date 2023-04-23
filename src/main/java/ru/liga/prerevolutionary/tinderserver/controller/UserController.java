@@ -10,6 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import ru.liga.prerevolutionary.tinderserver.dto.TinderUserDto;
 import ru.liga.prerevolutionary.tinderserver.exception.NotAllowRequest;
+import ru.liga.prerevolutionary.tinderserver.service.LikeService;
 import ru.liga.prerevolutionary.tinderserver.service.TinderUserService;
 
 @Slf4j
@@ -19,6 +20,7 @@ import ru.liga.prerevolutionary.tinderserver.service.TinderUserService;
 @Valid
 public class UserController {
     private final TinderUserService tinderUserService;
+    private final LikeService likeService;
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
@@ -41,7 +43,7 @@ public class UserController {
         if (chatId.equals(anotherChatId)) {
             throw new NotAllowRequest("Not allowed to like yourself. ChatId " + chatId);
         }
-        tinderUserService.like(chatId, anotherChatId);
+        likeService.like(chatId, anotherChatId);
         log.info("like from {} to {}", chatId, anotherChatId);
     }
 

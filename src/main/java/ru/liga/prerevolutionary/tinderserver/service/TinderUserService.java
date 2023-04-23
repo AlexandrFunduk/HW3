@@ -10,8 +10,6 @@ public interface TinderUserService {
 
     TinderUserDto update(TinderUserDto tinderUserDto, String chatId);
 
-    void like(String chatId, String anotherChatId);
-
     TinderUserDto getNextSearch(String chatId);
 
     TinderUserDto getPreviousSearch(String chatId);
