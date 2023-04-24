@@ -13,8 +13,8 @@ public class DtoToTinderUserConverter implements Converter<TinderUserDto, Tinder
         return TinderUser.builder()
                 .chatId(dto.getChatId())
                 .name(dto.getName())
-                .preference(dto.getPreference())
-                .sex(dto.getSex())
+                .preference(sexConvert(dto.getPreference()))
+                .sex(sexConvert(dto.getSex()))
                 .header(dto.getHeader())
                 .description(dto.getDescription())
                 .build();
@@ -23,11 +23,25 @@ public class DtoToTinderUserConverter implements Converter<TinderUserDto, Tinder
     @Override
     public TinderUser convert(TinderUserDto dto, TinderUser user) {
         user.setName(dto.getName());
-        user.setPreference(dto.getPreference());
-        user.setSex(dto.getSex());
+        user.setPreference(sexConvert(dto.getPreference()));
+        user.setSex(sexConvert(dto.getSex()));
         user.setHeader(dto.getHeader());
         user.setDescription(dto.getDescription());
         user.setUpdated(new Date());
         return user;
+    }
+
+    private String sexConvert(String sex) {
+        try {
+            Sex boxetSex = Sex.valueOf(sex);
+            return switch (boxetSex) {
+                case ALL -> "Все";
+                case MALE -> "Сударь";
+                case FEMALE -> "Сударыня";
+            };
+        } catch (IllegalArgumentException e) {
+            return sex;
+        }
+
     }
 }
