@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
@@ -14,6 +15,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@ActiveProfiles("test")
 class UserControllerTest {
 
     @Autowired
@@ -26,11 +28,11 @@ class UserControllerTest {
                         .content("""
                                 {
                                     "chatId": "777",
-                                    "name": "55",
-                                    "sex": "sex",
-                                    "header": "header",
-                                    "description": "description",
-                                    "preference": "preference"
+                                    "name": "777",
+                                    "sex": "777",
+                                    "header": "777",
+                                    "description": "777",
+                                    "preference": "777"
                                 }""")
                 )
                 .andExpect(status().isCreated());
@@ -56,12 +58,12 @@ class UserControllerTest {
     @Test
     void updateUser() throws Exception {
         this.mockMvc.perform(MockMvcRequestBuilders.put("/users")
-                        .header("chatId", "7")
+                        .header("chatId", "9")
                         .header("Content-Type", "application/json")
                         .header("Content-Length", "0")
                         .content("""
                                 {
-                                    "chatId": "7",
+                                    "chatId": "9",
                                     "name": "55",
                                     "sex": "sex",
                                     "header": "header",

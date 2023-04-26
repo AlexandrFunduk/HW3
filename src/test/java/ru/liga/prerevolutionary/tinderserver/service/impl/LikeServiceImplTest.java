@@ -3,6 +3,7 @@ package ru.liga.prerevolutionary.tinderserver.service.impl;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import ru.liga.prerevolutionary.tinderserver.exception.NotFoundException;
 import ru.liga.prerevolutionary.tinderserver.model.LikeId;
 
@@ -10,6 +11,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.*;
 
 
 @SpringBootTest
+@ActiveProfiles("test")
 class LikeServiceImplTest {
     @Autowired
     private LikeServiceImpl likeService;

@@ -3,6 +3,7 @@ package ru.liga.prerevolutionary.tinderserver.service.impl;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import ru.liga.prerevolutionary.tinderserver.dto.TinderUserDto;
 import ru.liga.prerevolutionary.tinderserver.exception.DuplicatedEntityException;
 import ru.liga.prerevolutionary.tinderserver.exception.NotFoundException;
@@ -11,6 +12,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 @SpringBootTest
+@ActiveProfiles("test")
 class TinderUserServiceImplTest {
     @Autowired
     private TinderUserServiceImpl tinderUserService;
