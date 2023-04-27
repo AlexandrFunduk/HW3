@@ -25,6 +25,8 @@ public class UserController {
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     public TinderUserDto createUser(@NotNull @RequestBody TinderUserDto dto) {
+        //todo если пишешь лог в контроллере, то лучше писать его в виде:
+        // log.info("Accept request to register client, request: {}", dto);
         log.info("register {}", dto);
         return tinderUserService.create(dto);
     }
@@ -55,6 +57,7 @@ public class UserController {
         return tinderUserDto;
     }
 
+    //todo лучше будет перенести этот метод в какой нибудь класс ValidationUtils, в контроллере должны быть только ручки
     private void validate(String chatId, String headerChatId) {
         if (!headerChatId.equals(chatId)) {
             throw new NotAllowRequest("Header parameter chatId %s not equals path parameter %s".formatted(headerChatId, chatId));

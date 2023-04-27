@@ -29,6 +29,9 @@ public class OldImageBuilder {
     }
 
     public OldImageBuilder(TinderUserDto user, String label) {
+        //todo чтение файла из ресурсов надо сделать один раз и переиспользовать его каждый раз
+        // постоянно читать один и тот же файл нет смысла, к тому же это ест много ресурсов
+        //todo можно сделать билдер как Component, инициализирую нужные поля в конструкторе, а уже ниже в методе build() принимать user и label
         try (InputStream oldImage = OldImageBuilder.class.getClassLoader().getResourceAsStream("image/prerev-background.jpg")) {
             assert oldImage != null;
             this.backgroundImage = ImageIO.read(oldImage);

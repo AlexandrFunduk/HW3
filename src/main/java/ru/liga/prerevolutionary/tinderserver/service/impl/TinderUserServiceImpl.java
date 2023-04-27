@@ -24,6 +24,9 @@ public class TinderUserServiceImpl implements TinderUserService {
 
     @Override
     public TinderUserDto get(String chatId) {
+        //todo очень длинная строка если у тебя методы вызываются цепочкой, лучше будет их переносить, чтобы точки были друг под другом:
+        //tinderUserRepository.findUserByChatId(chatId)
+        //                    .orElseThrow(() -> ...........
         TinderUser user = tinderUserRepository.findUserByChatId(chatId).orElseThrow(() -> new NotFoundException("User with chatId %s not found".formatted(chatId)));
         return converter.convert(user);
     }
@@ -32,11 +35,13 @@ public class TinderUserServiceImpl implements TinderUserService {
     public TinderUserDto create(TinderUserDto tinderUserDto) {
         //validate dto
         tinderUserRepository.findUserByChatId(tinderUserDto.getChatId()).ifPresent(user -> {
+            //todo создание message для ексепшена можно вынести в метод, будет компактнее и более читаемо
             throw new DuplicatedEntityException("User with chatId already created %s since %s".formatted(user.getChatId(), user.getRegistered()));
         });
         TinderUser user = reversConverter.convert(tinderUserDto);
         user.setLastFoundUser(user);
         user.setRegistered(new Date());
+        //todo хорошей практикой является выносить сохранение в отдельный метод и добавлять там логирование
         tinderUserRepository.save(user);
         return converter.convert(user);
     }
@@ -56,6 +61,7 @@ public class TinderUserServiceImpl implements TinderUserService {
         TinderUser user = tinderUserRepository.findUserByChatId(chatId).orElseThrow(() -> new NotFoundException("User with chatId %s not found".formatted(chatId)));
         Optional<TinderUser> maybeNextSearchedUser = tinderUserRepository.findNextSearchedUser(user);
         if (maybeNextSearchedUser.isEmpty()) {
+            //todo можно вынести в отдельный метод
             TinderUser userWithNegativeChatId = new TinderUser();
             userWithNegativeChatId.setId(-1);
             user.setLastFoundUser(userWithNegativeChatId);
@@ -72,6 +78,7 @@ public class TinderUserServiceImpl implements TinderUserService {
         TinderUser user = tinderUserRepository.findUserByChatId(chatId).orElseThrow(() -> new NotFoundException("User with chatId %s not found".formatted(chatId)));
         Optional<TinderUser> maybePreviousSearchedUser = tinderUserRepository.findPreviousSearchedUser(user);
         if (maybePreviousSearchedUser.isEmpty()) {
+            //todo можно вынести в отдельный метод
             TinderUser userWithMaxChatId = new TinderUser();
             userWithMaxChatId.setId(Integer.MAX_VALUE);
             user.setLastFoundUser(userWithMaxChatId);

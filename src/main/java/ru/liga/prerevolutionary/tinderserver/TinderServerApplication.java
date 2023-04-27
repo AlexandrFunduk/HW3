@@ -8,6 +8,7 @@ import ru.liga.prerevolutionary.tinderserver.image.FontRegistrar;
 public class TinderServerApplication {
 
     public static void main(String[] args) {
+        //todo неочевидно что здесь есть какая то логика, надо вынести в другой класс
         FontRegistrar.registerFromResource("font/OldStandardTT-Regular.ttf");
         SpringApplication.run(TinderServerApplication.class, args);
     }

@@ -16,6 +16,7 @@ public class ReflectionHelper {
         boolean isAccessible = true;
         try {
             field = object.getClass().getDeclaredField(name); //getField() for public fields
+            //todo .isAccessible() deprecated, надо заменить
             isAccessible = field.isAccessible();
             field.setAccessible(true);
             return field.get(object);

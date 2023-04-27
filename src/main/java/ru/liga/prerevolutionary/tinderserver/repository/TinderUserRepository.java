@@ -12,6 +12,7 @@ import java.util.Optional;
 public interface TinderUserRepository extends JpaRepository<TinderUser, Integer> {
     Optional<TinderUser> findUserByChatId(String chatId);
 
+    //todo выглядит очень сложно и непонятно, думаю лучше сделать селект попроще, а потом уже найти нужную запись используя джаву
     @Query(value = "SELECT top 1 * FROM TB_TINDER_USER WHERE ID > :#{#user.lastViewedUser.id} AND ID <> :#{#user.id} " +
             "AND ID IN (select * from (select * from ( " +
             "                              (select USER_ID as id from TB_LIKE where LIKE_ID = :#{#user.chatId}) " +
@@ -32,6 +33,8 @@ public interface TinderUserRepository extends JpaRepository<TinderUser, Integer>
 
 
     @Query(value = "SELECT top 1 * FROM TB_TINDER_USER " +
+            //todo кириллица никогда не должна быть в код, сейчас можешь оставить, но имей в виду
+            //вместо русс букв в коде можешь использовать MessageService + message.properties
             "WHERE ID <> :#{#user.id} AND (PREFERENCE = :#{#user.sex} OR PREFERENCE = 'все') AND (SEX = :#{#user.preference} OR 'все'= :#{#user.preference}) AND ID > :#{#user.lastFoundUser.id} " +
             "ORDER BY ID", nativeQuery = true)
     Optional<TinderUser> findNextSearchedUser(TinderUser user);

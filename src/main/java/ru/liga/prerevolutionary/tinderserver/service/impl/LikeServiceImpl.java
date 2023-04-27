@@ -17,6 +17,8 @@ public class LikeServiceImpl implements LikeService {
     private final LikeRepository likeRepository;
 
     public LikeId getLikeId(String chatId, String anotherChatId) {
+        //todo можно вынести создание message для ексепшена в статический метод и использовать его везде
+        // у тебя много где повторяется одно и тоже
         TinderUser user = tinderUserRepository.findUserByChatId(chatId).orElseThrow(() -> new NotFoundException("User with chatId %s not found".formatted(chatId)));
         TinderUser anotherUser = tinderUserRepository.findUserByChatId(anotherChatId).orElseThrow(() -> new NotFoundException("User with chatId %s not found".formatted(anotherChatId)));
         return new LikeId(user.getId(), anotherUser.getId());
@@ -27,6 +29,8 @@ public class LikeServiceImpl implements LikeService {
         return likeRepository.findRelate(likeId).orElse("");
     }
 
+    //todo у тебя здесь есть аннотация, а у методов выше нет, лучше делать чтобы все было одинаково
+    //либо добавить аннотации выше, либо убрать здесь
     @Override
     public void like(String chatId, String anotherChatId) {
         TinderUser user = tinderUserRepository.findUserByChatId(chatId).orElseThrow(() -> new NotFoundException("User with chatId %s not found".formatted(chatId)));
