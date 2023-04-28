@@ -9,17 +9,25 @@ public class TinderUserToDtoConverter implements Converter<TinderUser, TinderUse
 
     @Override
     public TinderUserDto convert(TinderUser user) {
-        return new TinderUserDto(user.getChatId(), user.getName(), user.getSex(), user.getHeader(), user.getDescription(), user.getPreference());
+        return new TinderUserDto(user.getChatId(), user.getName(), sexConvert(user.getSex()), user.getHeader(), user.getDescription(), sexConvert(user.getPreference()));
     }
 
     @Override
     public TinderUserDto convert(TinderUser user, TinderUserDto dto) {
         dto.setChatId(user.getChatId());
         dto.setName(user.getName());
-        dto.setSex(user.getSex());
+        dto.setSex(sexConvert(user.getSex()));
         dto.setHeader(user.getHeader());
         dto.setDescription(user.getDescription());
-        dto.setPreference(user.getPreference());
+        dto.setPreference(sexConvert(user.getPreference()));
         return dto;
+    }
+
+    private String sexConvert(String sex) {
+        try {
+            return Sex.ofTitle(sex).name();
+        } catch (IllegalArgumentException e) {
+            return "";
+        }
     }
 }

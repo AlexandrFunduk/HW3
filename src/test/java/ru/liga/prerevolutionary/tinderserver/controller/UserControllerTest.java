@@ -29,10 +29,10 @@ class UserControllerTest {
                                 {
                                     "chatId": "777",
                                     "name": "777",
-                                    "sex": "777",
+                                    "sex": "MALE",
                                     "header": "777",
                                     "description": "777",
-                                    "preference": "777"
+                                    "preference": "FEMALE"
                                 }""")
                 )
                 .andExpect(status().isCreated());
@@ -46,10 +46,10 @@ class UserControllerTest {
                                 {
                                     "chatId": "1",
                                     "name": "55",
-                                    "sex": "sex",
+                                    "sex": "MALE",
                                     "header": "header",
                                     "description": "description",
-                                    "preference": "preference"
+                                    "preference": "FEMALE"
                                 }""")
                 )
                 .andExpect(status().isConflict());
@@ -65,10 +65,10 @@ class UserControllerTest {
                                 {
                                     "chatId": "9",
                                     "name": "55",
-                                    "sex": "sex",
+                                    "sex": "MALE",
                                     "header": "header",
                                     "description": "description",
-                                    "preference": "preference"
+                                    "preference": "FEMALE"
                                 }""")
                 )
                 .andExpect(status().isOk());
@@ -84,10 +84,10 @@ class UserControllerTest {
                                 {
                                     "chatId": "7",
                                     "name": "55",
-                                    "sex": "sex",
+                                    "sex": "MALE",
                                     "header": "header",
                                     "description": "description",
-                                    "preference": "preference"
+                                    "preference": "FEMALE"
                                 }""")
                 )
                 .andExpect(status().isConflict());
@@ -121,10 +121,10 @@ class UserControllerTest {
                         {
                             "chatId": "2",
                             "name": "Петрова Ольга Сергеевна",
-                            "sex": "ж",
+                            "sex": "FEMALE",
                             "header": "Ищу надежного партнера",
                             "description": "Я - уверенная в себе женщина с чувством юмора",
-                            "preference": "ж"
+                            "preference": "FEMALE"
                         }"""));
     }
 

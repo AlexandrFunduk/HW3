@@ -1,5 +1,4 @@
-//todo надо перенсти в другой пакет, это же не контроллер
-package ru.liga.prerevolutionary.tinderserver.controller;
+package ru.liga.prerevolutionary.tinderserver.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -9,9 +8,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import ru.liga.prerevolutionary.tinderserver.dto.ErrorDto;
-import ru.liga.prerevolutionary.tinderserver.exception.DuplicatedEntityException;
-import ru.liga.prerevolutionary.tinderserver.exception.NotAllowRequest;
-import ru.liga.prerevolutionary.tinderserver.exception.NotFoundException;
 
 @Slf4j
 @RestControllerAdvice

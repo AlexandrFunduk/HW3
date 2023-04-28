@@ -1,10 +1,25 @@
 package ru.liga.prerevolutionary.tinderserver.dto.converter;
 
 public enum Sex {
-    MALE,
-    FEMALE,
-    ALL
-    // Добавить, если будет использоваться в западных странах
-    // TRANS_MALE_FROM_FEMALE
-    // TRANS_FEMALE_FROM_MALE
+    MALE("Сударь"),
+    FEMALE("Сударыня"),
+    ALL("Все");
+    private final String title;
+
+    Sex(String title) {
+        this.title = title;
+    }
+
+    public static Sex ofTitle(String title) {
+        return switch (title) {
+            case "Сударь" -> MALE;
+            case "Сударыня" -> FEMALE;
+            case "Все" -> ALL;
+            default -> throw new IllegalArgumentException("Not support title " + title);
+        };
+    }
+
+    String getTitle() {
+        return title;
+    }
 }

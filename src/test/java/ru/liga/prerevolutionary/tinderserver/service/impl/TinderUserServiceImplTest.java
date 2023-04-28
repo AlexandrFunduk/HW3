@@ -34,7 +34,7 @@ class TinderUserServiceImplTest {
     void createNewTinderUser() {
         assertThatThrownBy(() -> tinderUserService.get("555555"))
                 .isInstanceOf(NotFoundException.class);
-        tinderUserService.create(new TinderUserDto("555555", "a", "b", "c", "d", "e"));
+        tinderUserService.create(new TinderUserDto("555555", "a", "MALE", "c", "d", "FEMALE"));
         assertThat(tinderUserService.get("555555"))
                 .hasFieldOrPropertyWithValue("name", "a");
     }
@@ -43,7 +43,7 @@ class TinderUserServiceImplTest {
     void createDuplicatedTinderUser() {
         assertThat(tinderUserService.get("1"))
                 .hasFieldOrPropertyWithValue("name", "Иванов Иван Иванович");
-        assertThatThrownBy(() -> tinderUserService.create(new TinderUserDto("1", "a", "b", "c", "d", "e")))
+        assertThatThrownBy(() -> tinderUserService.create(new TinderUserDto("1", "a", "MALE", "c", "d", "FEMALE")))
                 .isInstanceOf(DuplicatedEntityException.class)
                 .hasMessageStartingWith("User with chatId already created 1 since");
     }

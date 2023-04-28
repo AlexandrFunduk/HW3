@@ -27,10 +27,7 @@ public class ImageController {
 
     @GetMapping
     public ImageDto getImage(@NotBlank @RequestHeader(value = "chatId") String chatId) {
-        ImageDto profile = imageService.getProfile(chatId);
-        //todo лучше перенести этот лог в сервис, потому что логируется как раз то, что делает метод выше
-        log.info("Get profile with chatId {} as image", chatId);
-        return profile;
+        return imageService.getProfile(chatId);
     }
 
     @GetMapping(value = "/search/next")

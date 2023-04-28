@@ -6,6 +6,8 @@ import ru.liga.prerevolutionary.tinderserver.model.TinderUser;
 
 import java.util.Date;
 
+import static ru.liga.prerevolutionary.tinderserver.dto.converter.Sex.*;
+
 @Component
 public class DtoToTinderUserConverter implements Converter<TinderUserDto, TinderUser> {
     @Override
@@ -35,13 +37,12 @@ public class DtoToTinderUserConverter implements Converter<TinderUserDto, Tinder
         try {
             Sex boxetSex = Sex.valueOf(sex);
             return switch (boxetSex) {
-                case ALL -> "Все";
-                case MALE -> "Сударь";
-                case FEMALE -> "Сударыня";
+                case ALL -> ALL.getTitle();
+                case MALE -> MALE.getTitle();
+                case FEMALE -> FEMALE.getTitle();
             };
         } catch (IllegalArgumentException e) {
             return sex;
         }
-
     }
 }

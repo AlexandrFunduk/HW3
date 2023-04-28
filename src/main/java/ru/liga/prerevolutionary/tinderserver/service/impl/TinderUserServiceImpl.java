@@ -24,10 +24,7 @@ public class TinderUserServiceImpl implements TinderUserService {
 
     @Override
     public TinderUserDto get(String chatId) {
-        //todo очень длинная строка если у тебя методы вызываются цепочкой, лучше будет их переносить, чтобы точки были друг под другом:
-        //tinderUserRepository.findUserByChatId(chatId)
-        //                    .orElseThrow(() -> ...........
-        TinderUser user = tinderUserRepository.findUserByChatId(chatId).orElseThrow(() -> new NotFoundException("User with chatId %s not found".formatted(chatId)));
+        TinderUser user = tinderUserRepository.getUserByChatId(chatId);
         return converter.convert(user);
     }
 
@@ -35,64 +32,73 @@ public class TinderUserServiceImpl implements TinderUserService {
     public TinderUserDto create(TinderUserDto tinderUserDto) {
         //validate dto
         tinderUserRepository.findUserByChatId(tinderUserDto.getChatId()).ifPresent(user -> {
-            //todo создание message для ексепшена можно вынести в метод, будет компактнее и более читаемо
-            throw new DuplicatedEntityException("User with chatId already created %s since %s".formatted(user.getChatId(), user.getRegistered()));
+            throw new DuplicatedEntityException(getDuplicateExceptionMessage(user));
         });
         TinderUser user = reversConverter.convert(tinderUserDto);
         user.setLastFoundUser(user);
         user.setRegistered(new Date());
-        //todo хорошей практикой является выносить сохранение в отдельный метод и добавлять там логирование
-        tinderUserRepository.save(user);
+        save(user);
         return converter.convert(user);
+    }
+
+    private String getDuplicateExceptionMessage(TinderUser user) {
+        return "User with chatId already created %s since %s".formatted(user.getChatId(), user.getRegistered());
+    }
+
+    private void save(TinderUser user) {
+        log.debug("Save user {}", user);
+        tinderUserRepository.save(user);
     }
 
     @Override
     public TinderUserDto update(TinderUserDto tinderUserDto, String chatId) {
         //validate dto
-        TinderUser oldTinderUSer = tinderUserRepository.findUserByChatId(chatId).orElseThrow(() -> new NotFoundException("User with chatId %s not found".formatted(chatId)));
+        TinderUser oldTinderUSer = tinderUserRepository.getUserByChatId(chatId);
         TinderUser updatedTinderUSer = reversConverter.convert(tinderUserDto, oldTinderUSer);
-        tinderUserRepository.save(updatedTinderUSer);
+        save(updatedTinderUSer);
         return converter.convert(updatedTinderUSer);
     }
 
 
     @Override
     public TinderUserDto getNextSearch(String chatId) {
-        TinderUser user = tinderUserRepository.findUserByChatId(chatId).orElseThrow(() -> new NotFoundException("User with chatId %s not found".formatted(chatId)));
-        Optional<TinderUser> maybeNextSearchedUser = tinderUserRepository.findNextSearchedUser(user);
-        if (maybeNextSearchedUser.isEmpty()) {
-            //todo можно вынести в отдельный метод
-            TinderUser userWithNegativeChatId = new TinderUser();
-            userWithNegativeChatId.setId(-1);
-            user.setLastFoundUser(userWithNegativeChatId);
-            maybeNextSearchedUser = tinderUserRepository.findNextSearchedUser(user);
-        }
-        TinderUser nextSearchedUser = maybeNextSearchedUser.orElseThrow(() -> new NotFoundException("User with chatId %s have not next search user".formatted(chatId)));
+        TinderUser user = tinderUserRepository.getUserByChatId(chatId);
+        TinderUser nextSearchedUser = tinderUserRepository.findNextSearchedUser(user)
+                .or(() -> findFromStart(user))
+                .orElseThrow(() -> new NotFoundException("User with chatId %s have not next search user".formatted(chatId)));
         user.setLastFoundUser(nextSearchedUser);
-        tinderUserRepository.save(user);
+        save(user);
         return converter.convert(nextSearchedUser);
+    }
+
+    private Optional<TinderUser> findFromStart(TinderUser user) {
+        TinderUser userWithNegativeChatId = new TinderUser();
+        userWithNegativeChatId.setId(-1);
+        user.setLastFoundUser(userWithNegativeChatId);
+        return tinderUserRepository.findNextSearchedUser(user);
     }
 
     @Override
     public TinderUserDto getPreviousSearch(String chatId) {
-        TinderUser user = tinderUserRepository.findUserByChatId(chatId).orElseThrow(() -> new NotFoundException("User with chatId %s not found".formatted(chatId)));
-        Optional<TinderUser> maybePreviousSearchedUser = tinderUserRepository.findPreviousSearchedUser(user);
-        if (maybePreviousSearchedUser.isEmpty()) {
-            //todo можно вынести в отдельный метод
-            TinderUser userWithMaxChatId = new TinderUser();
-            userWithMaxChatId.setId(Integer.MAX_VALUE);
-            user.setLastFoundUser(userWithMaxChatId);
-            maybePreviousSearchedUser = tinderUserRepository.findPreviousSearchedUser(user);
-        }
-        TinderUser previousSearchedUser = maybePreviousSearchedUser.orElseThrow(() -> new NotFoundException("User with chatId %s have not previous search user".formatted(chatId)));
+        TinderUser user = tinderUserRepository.getUserByChatId(chatId);
+        TinderUser previousSearchedUser = tinderUserRepository.findPreviousSearchedUser(user)
+                .or(() -> findFromAnd(user))
+                .orElseThrow(() -> new NotFoundException("User with chatId %s have not previous search user".formatted(chatId)));
         user.setLastFoundUser(previousSearchedUser);
-        tinderUserRepository.save(user);
+        save(user);
         return converter.convert(previousSearchedUser);
+    }
+
+    private Optional<TinderUser> findFromAnd(TinderUser user) {
+        TinderUser userWithMaxChatId = new TinderUser();
+        userWithMaxChatId.setId(Integer.MAX_VALUE);
+        user.setLastFoundUser(userWithMaxChatId);
+        return tinderUserRepository.findPreviousSearchedUser(user);
     }
 
     @Override
     public TinderUserDto getNextView(String chatId) {
-        TinderUser user = tinderUserRepository.findUserByChatId(chatId).orElseThrow(() -> new NotFoundException("User with chatId %s not found".formatted(chatId)));
+        TinderUser user = tinderUserRepository.getUserByChatId(chatId);
         Optional<TinderUser> maybeNextViewedUser = tinderUserRepository.findNextRelatedUser(user);
         if (maybeNextViewedUser.isEmpty()) {
             TinderUser userWithNegativeChatId = new TinderUser();
@@ -100,15 +106,16 @@ public class TinderUserServiceImpl implements TinderUserService {
             user.setLastViewedUser(userWithNegativeChatId);
             maybeNextViewedUser = tinderUserRepository.findNextRelatedUser(user);
         }
-        TinderUser nextViewedUser = maybeNextViewedUser.orElseThrow(() -> new NotFoundException("User with chatId %s have not next viewed user".formatted(chatId)));
+        TinderUser nextViewedUser = maybeNextViewedUser
+                .orElseThrow(() -> new NotFoundException("User with chatId %s have not next viewed user".formatted(chatId)));
         user.setLastViewedUser(nextViewedUser);
-        tinderUserRepository.save(user);
+        save(user);
         return converter.convert(nextViewedUser);
     }
 
     @Override
     public TinderUserDto getPreviousView(String chatId) {
-        TinderUser user = tinderUserRepository.findUserByChatId(chatId).orElseThrow(() -> new NotFoundException("User with chatId %s not found".formatted(chatId)));
+        TinderUser user = tinderUserRepository.getUserByChatId(chatId);
         Optional<TinderUser> maybePreviousViewedUser = tinderUserRepository.findPreviousRelatedUser(user);
         if (maybePreviousViewedUser.isEmpty()) {
             TinderUser userWithMaxChatId = new TinderUser();
@@ -116,9 +123,10 @@ public class TinderUserServiceImpl implements TinderUserService {
             user.setLastViewedUser(userWithMaxChatId);
             maybePreviousViewedUser = tinderUserRepository.findPreviousRelatedUser(user);
         }
-        TinderUser previousViewedUser = maybePreviousViewedUser.orElseThrow(() -> new NotFoundException("User with chatId %s have not previous viewed user".formatted(chatId)));
+        TinderUser previousViewedUser = maybePreviousViewedUser
+                .orElseThrow(() -> new NotFoundException("User with chatId %s have not previous viewed user".formatted(chatId)));
         user.setLastViewedUser(previousViewedUser);
-        tinderUserRepository.save(user);
+        save(user);
         return converter.convert(previousViewedUser);
     }
 }

@@ -7,6 +7,7 @@ import org.capaxit.imagegenerator.imageexporter.ImageWriter;
 import org.capaxit.imagegenerator.imageexporter.ImageWriterFactory;
 import org.capaxit.imagegenerator.impl.TextImageImpl;
 import org.capaxit.imagegenerator.textalign.GreedyTextWrapper;
+import org.springframework.stereotype.Component;
 import ru.liga.prerevolutionary.tinderserver.dto.TinderUserDto;
 
 import javax.imageio.ImageIO;
@@ -17,33 +18,26 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
+@Component
 public class OldImageBuilder {
 
-    private final TextImageImpl textImage;
     private final BufferedImage backgroundImage;
-    private final TinderUserDto user;
-    private final String label;
 
-    public OldImageBuilder(TinderUserDto user) {
-        this(user, "");
-    }
-
-    public OldImageBuilder(TinderUserDto user, String label) {
-        //todo чтение файла из ресурсов надо сделать один раз и переиспользовать его каждый раз
-        // постоянно читать один и тот же файл нет смысла, к тому же это ест много ресурсов
-        //todo можно сделать билдер как Component, инициализирую нужные поля в конструкторе, а уже ниже в методе build() принимать user и label
+    public OldImageBuilder() {
         try (InputStream oldImage = OldImageBuilder.class.getClassLoader().getResourceAsStream("image/prerev-background.jpg")) {
             assert oldImage != null;
             this.backgroundImage = ImageIO.read(oldImage);
-            this.textImage = new TextImageImpl(backgroundImage.getWidth(), backgroundImage.getHeight(), new Margin(25, 20, 25, 20));
-            this.user = user;
-            this.label = label;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public byte[] build() {
+    public byte[] build(TinderUserDto user) {
+        return build(user, "");
+    }
+
+    public byte[] build(TinderUserDto user, String label) {
+        TextImageImpl textImage = new TextImageImpl(backgroundImage.getWidth(), backgroundImage.getHeight(), new Margin(25, 20, 25, 20));
         Font likeFont = new Font("Old Standard TT Regular", Font.BOLD, 25);
         Font nameFont = new Font("Old Standard TT Regular", Font.PLAIN, 30);
         Font headerFont = new Font("Old Standard TT Regular", Font.BOLD, 30);

@@ -12,6 +12,7 @@ import ru.liga.prerevolutionary.tinderserver.dto.TinderUserDto;
 import ru.liga.prerevolutionary.tinderserver.exception.NotAllowRequest;
 import ru.liga.prerevolutionary.tinderserver.service.LikeService;
 import ru.liga.prerevolutionary.tinderserver.service.TinderUserService;
+import ru.liga.prerevolutionary.tinderserver.validation.CheckRequest;
 
 @Slf4j
 @RestController
@@ -25,17 +26,15 @@ public class UserController {
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     public TinderUserDto createUser(@NotNull @RequestBody TinderUserDto dto) {
-        //todo если пишешь лог в контроллере, то лучше писать его в виде:
-        // log.info("Accept request to register client, request: {}", dto);
-        log.info("register {}", dto);
+        log.info("Accept request to register client, request: {}", dto);
         return tinderUserService.create(dto);
     }
 
     @PutMapping
     @ResponseStatus(HttpStatus.OK)
     public TinderUserDto updateUser(@Valid @RequestBody TinderUserDto dto, @NotBlank @RequestHeader(value = "chatId") String chatId) {
-        validate(dto.getChatId(), chatId);
-        log.info("update {} from request with chatId {}", dto, chatId);
+        CheckRequest.validateEqualChatId(dto.getChatId(), chatId);
+        log.info("Accept request to update {} from request with chatId {}", dto, chatId);
         return tinderUserService.update(dto, chatId);
     }
 
@@ -46,21 +45,13 @@ public class UserController {
             throw new NotAllowRequest("Not allowed to like yourself. ChatId " + chatId);
         }
         likeService.like(chatId, anotherChatId);
-        log.info("like from {} to {}", chatId, anotherChatId);
     }
 
     @GetMapping(value = "/{chatId}")
     public TinderUserDto getUser(@NotBlank @RequestHeader(value = "chatId") String headerChatId, @NotBlank @PathVariable String chatId) {
-        validate(chatId, headerChatId);
+        CheckRequest.validateEqualChatId(chatId, headerChatId);
         TinderUserDto tinderUserDto = tinderUserService.get(chatId);
         log.info("Get user with chatId {}", chatId);
         return tinderUserDto;
-    }
-
-    //todo лучше будет перенести этот метод в какой нибудь класс ValidationUtils, в контроллере должны быть только ручки
-    private void validate(String chatId, String headerChatId) {
-        if (!headerChatId.equals(chatId)) {
-            throw new NotAllowRequest("Header parameter chatId %s not equals path parameter %s".formatted(headerChatId, chatId));
-        }
     }
 }
