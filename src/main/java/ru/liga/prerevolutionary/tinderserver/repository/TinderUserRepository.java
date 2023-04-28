@@ -41,12 +41,12 @@ public interface TinderUserRepository extends JpaRepository<TinderUser, Integer>
     @Query(value = "SELECT top 1 * FROM TB_TINDER_USER " +
             //todo кириллица никогда не должна быть в код, сейчас можешь оставить, но имей в виду
             //вместо русс букв в коде можешь использовать MessageService + message.properties
-            "WHERE ID <> :#{#user.id} AND (PREFERENCE = :#{#user.sex} OR PREFERENCE = 'Все') AND (SEX = :#{#user.preference} OR 'все'= :#{#user.preference}) AND ID > :#{#user.lastFoundUser.id} " +
+            "WHERE ID <> :#{#user.id} AND (PREFERENCE = :#{#user.sex} OR PREFERENCE = 'Все') AND (SEX = :#{#user.preference} OR 'Все'= :#{#user.preference}) AND ID > :#{#user.lastFoundUser.id} " +
             "ORDER BY ID", nativeQuery = true)
     Optional<TinderUser> findNextSearchedUser(TinderUser user);
 
     @Query(value = "SELECT top 1 * FROM TB_TINDER_USER " +
-            "WHERE ID <> :#{#user.id} AND (PREFERENCE = :#{#user.sex} OR PREFERENCE = 'Все') AND (SEX = :#{#user.preference} OR 'все'= :#{#user.preference}) AND ID < :#{#user.lastFoundUser.id} " +
+            "WHERE ID <> :#{#user.id} AND (PREFERENCE = :#{#user.sex} OR PREFERENCE = 'Все') AND (SEX = :#{#user.preference} OR 'Все'= :#{#user.preference}) AND ID < :#{#user.lastFoundUser.id} " +
             "ORDER BY ID DESC", nativeQuery = true)
     Optional<TinderUser> findPreviousSearchedUser(TinderUser user);
 }
