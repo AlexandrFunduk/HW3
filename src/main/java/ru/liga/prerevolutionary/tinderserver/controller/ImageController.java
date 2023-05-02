@@ -32,6 +32,7 @@ public class ImageController {
 
     @GetMapping(value = "/search/next")
     public ImageDto searchNext(@NotBlank @RequestHeader(value = "chatId") String chatId) {
+        //todo много логики в контроллере не должно быть, лучше вынести все что ниже в метод сервиса
         TinderUserDto nextSearch = tinderUserService.getNextSearch(chatId);
         String relate = LikeService.getRelated(chatId, nextSearch.getChatId());
         ImageDto form = imageService.getForm(relate, nextSearch);

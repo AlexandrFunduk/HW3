@@ -12,6 +12,8 @@ import java.util.Optional;
 @Transactional(readOnly = true)
 public interface LikeRepository extends JpaRepository<Like, LikeId> {
 
+    //todo зачем здесь логика на sql? сложно разобраться что здесь
+    // лучше сделать основной селект, а логику вынести в джаву
     @Query(value = "SELECT case " +
             "           when s = 3 then 'Взаимность' " +
             "           when s = 1 then 'Любим вами' " +

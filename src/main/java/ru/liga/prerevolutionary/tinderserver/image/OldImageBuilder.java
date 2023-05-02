@@ -28,6 +28,8 @@ public class OldImageBuilder {
             assert oldImage != null;
             this.backgroundImage = ImageIO.read(oldImage);
         } catch (IOException e) {
+            //todo лучше всегда перед ексепшеном выводить лог с кратким описанием что произошло
+            //todo минимальная конструкция для ексепшена такая -> throw new RuntimeException(e.getMessage(), e);
             throw new RuntimeException(e);
         }
     }
@@ -38,6 +40,8 @@ public class OldImageBuilder {
 
     public byte[] build(TinderUserDto user, String label) {
         TextImageImpl textImage = new TextImageImpl(backgroundImage.getWidth(), backgroundImage.getHeight(), new Margin(25, 20, 25, 20));
+        //todo likeFont + headerFont можно вынести в константы
+        //todo "Old Standard TT Regular" тоже можно вынести в константу
         Font likeFont = new Font("Old Standard TT Regular", Font.BOLD, 25);
         Font nameFont = new Font("Old Standard TT Regular", Font.PLAIN, 30);
         Font headerFont = new Font("Old Standard TT Regular", Font.BOLD, 30);
@@ -55,6 +59,8 @@ public class OldImageBuilder {
         }
 
         String sexWithName = user.getSex() + ", " + user.getName();
+        //todo ты всегда создаешь nameFont по шаблону, а потом подгоняешь его к sexWithName?
+        // нельзя сразу сделать нужный?
         nameFont = TextImageHelper.autoDecrementSizeFontByWidth(textImage, nameFont, sexWithName);
         textImage.setTextAligment(Alignment.LEFT)
                 .withFont(nameFont)

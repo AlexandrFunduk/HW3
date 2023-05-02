@@ -9,7 +9,6 @@ public class YatRule implements TranslateRule {
 
     private final static Map<String, String> yatWord = new HashMap<>();
 
-    //todo нельзя здесь просто сделать String.replace("е", "ѣ"); ?
     static {
         yatWord.put("еда", "ѣда");
         yatWord.put("ем", "ѣм");

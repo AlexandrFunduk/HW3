@@ -19,6 +19,14 @@ public interface TinderUserRepository extends JpaRepository<TinderUser, Integer>
     }
 
     //todo выглядит очень сложно и непонятно, думаю лучше сделать селект попроще, а потом уже найти нужную запись используя джаву
+
+    /**todo чтобы сделать здесь более читаемо, можно вынести селект ниже передавать его результат сюда как параметр
+     * select * from (select * from ( " +
+     *             "                              (select USER_ID as id from TB_LIKE where LIKE_ID = :#{#user.chatId}) " +
+     *             "                               union all " +
+     *             "                              (select LIKE_ID as id from TB_LIKE where USER_ID = :#{#user.chatId})) " +
+     *             "               group by id)
+    */
     /**
      * Метод возвращает следующего пользователя имеющего связь с пользователем переданным как параметр.
      * Сущность user хранит в себе id последнего просмотренного пользователя.
@@ -56,8 +64,6 @@ public interface TinderUserRepository extends JpaRepository<TinderUser, Integer>
 
 
     @Query(value = "SELECT top 1 * FROM TB_TINDER_USER " +
-            //todo кириллица никогда не должна быть в код, сейчас можешь оставить, но имей в виду
-            //вместо русс букв в коде можешь использовать MessageService + message.properties
             "WHERE ID <> :#{#user.id} AND (PREFERENCE = :#{#user.sex} OR PREFERENCE = 'Все') AND (SEX = :#{#user.preference} OR 'Все'= :#{#user.preference}) AND ID > :#{#user.lastFoundUser.id} " +
             "ORDER BY ID", nativeQuery = true)
     Optional<TinderUser> findNextSearchedUser(TinderUser user);

@@ -8,7 +8,6 @@ import java.util.stream.Collectors;
 public class FitaRule implements TranslateRule {
     private final static Map<String, String> fitaWord = new HashMap<>();
 
-    //todo нельзя здесь просто сделать String.replace("ф", "ѳ"); ?
     static {
         fitaWord.put("Агафья", "Агаѳья");
         fitaWord.put("Анфимъ", "Анѳимъ");
