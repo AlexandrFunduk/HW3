@@ -13,6 +13,7 @@ import java.util.Optional;
 public interface TinderUserRepository extends JpaRepository<TinderUser, Integer> {
     Optional<TinderUser> findUserByChatId(String chatId);
 
+    //todo в репозитории должны быть только методы работы с бд, надо перенести этот метод выше, в сервис
     default TinderUser getUserByChatId(String chatId) {
         return findUserByChatId(chatId)
                 .orElseThrow(() -> new NotFoundException("User with chatId %s not found".formatted(chatId)));
@@ -27,6 +28,14 @@ public interface TinderUserRepository extends JpaRepository<TinderUser, Integer>
      *             "                              (select LIKE_ID as id from TB_LIKE where USER_ID = :#{#user.chatId})) " +
      *             "               group by id)
     */
+    //todo какие то логические методы должны находиться в сервисном слое, а в репозитории просто обращения к бд
+    // предлагал я это переписать примерно так
+    //    Optional<TinderUser> findTopByIdGreaterThanAndIdNotAndIdIn(Integer lastViewedUser, Integer userId, List<Integer> relatedIds); + метод для вложенного селекта(можно даже просто вырезать эту часть)
+    // а уже в сервисе будет метод findNextRelatedUser(), в котором сначала метод с вызовом вложенного селекта(названный по бизнесу), потом этот, и return
+    // разраб, который будет смотреть такой код, быстрее поймет реализацию и, допустим, внесет в него правку
+    // А когда видишь такой большой селект теряешься: видишь селект который через union собран с другим селектом, из которого берется селект, из которого тоже берется селект, и уже после этого используется в условии
+    // понятно, что может это никто и не будет никогда трогать, но лучше сразу писать понятно
+
     /**
      * Метод возвращает следующего пользователя имеющего связь с пользователем переданным как параметр.
      * Сущность user хранит в себе id последнего просмотренного пользователя.

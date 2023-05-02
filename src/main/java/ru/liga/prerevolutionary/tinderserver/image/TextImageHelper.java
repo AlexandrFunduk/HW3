@@ -14,7 +14,6 @@ public class TextImageHelper {
     private static final TextWrapper wrapper = new GreedyTextWrapper();
 
     public static Font autoDecrementSizeFontByWidth(TextImage textImage, Font maxSizeFont, String textForAutosize) {
-        //todo какая то сложная логика с рефлексией, точно нельзя сделать проще?
         Margin margin = (Margin) ReflectionHelper.getFieldValue(textImage, "margin");
         Integer leftMargin = Optional.ofNullable(margin).map(Margin::getLeft).orElse(0);
         Integer rightMargin = Optional.ofNullable(margin).map(Margin::getRight).orElse(0);
