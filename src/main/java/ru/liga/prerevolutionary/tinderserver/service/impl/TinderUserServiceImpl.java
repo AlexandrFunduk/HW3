@@ -12,6 +12,7 @@ import ru.liga.prerevolutionary.tinderserver.repository.TinderUserRepository;
 import ru.liga.prerevolutionary.tinderserver.service.TinderUserService;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -24,7 +25,7 @@ public class TinderUserServiceImpl implements TinderUserService {
 
     @Override
     public TinderUserDto get(String chatId) {
-        TinderUser user = tinderUserRepository.getUserByChatId(chatId);
+        TinderUser user = getUserByChatId(chatId);
         return converter.convert(user);
     }
 
@@ -53,7 +54,7 @@ public class TinderUserServiceImpl implements TinderUserService {
     @Override
     public TinderUserDto update(TinderUserDto tinderUserDto, String chatId) {
         //validate dto
-        TinderUser oldTinderUSer = tinderUserRepository.getUserByChatId(chatId);
+        TinderUser oldTinderUSer = getUserByChatId(chatId);
         TinderUser updatedTinderUSer = reversConverter.convert(tinderUserDto, oldTinderUSer);
         save(updatedTinderUSer);
         return converter.convert(updatedTinderUSer);
@@ -62,7 +63,7 @@ public class TinderUserServiceImpl implements TinderUserService {
 
     @Override
     public TinderUserDto getNextSearch(String chatId) {
-        TinderUser user = tinderUserRepository.getUserByChatId(chatId);
+        TinderUser user = getUserByChatId(chatId);
         TinderUser nextSearchedUser = tinderUserRepository.findNextSearchedUser(user)
                 .or(() -> findFromStart(user))
                 .orElseThrow(() -> new NotFoundException("User with chatId %s have not next search user".formatted(chatId)));
@@ -80,7 +81,7 @@ public class TinderUserServiceImpl implements TinderUserService {
 
     @Override
     public TinderUserDto getPreviousSearch(String chatId) {
-        TinderUser user = tinderUserRepository.getUserByChatId(chatId);
+        TinderUser user = getUserByChatId(chatId);
         TinderUser previousSearchedUser = tinderUserRepository.findPreviousSearchedUser(user)
                 .or(() -> findFromAnd(user))
                 .orElseThrow(() -> new NotFoundException("User with chatId %s have not previous search user".formatted(chatId)));
@@ -98,13 +99,11 @@ public class TinderUserServiceImpl implements TinderUserService {
 
     @Override
     public TinderUserDto getNextView(String chatId) {
-        TinderUser user = tinderUserRepository.getUserByChatId(chatId);
-        Optional<TinderUser> maybeNextViewedUser = tinderUserRepository.findNextRelatedUser(user);
+        TinderUser user = getUserByChatId(chatId);
+        List<Integer> relatedIds = tinderUserRepository.findRelatedIds(user.getId());
+        Optional<TinderUser> maybeNextViewedUser = tinderUserRepository.findTopByIdGreaterThanAndIdNotAndIdIn(user.getLastViewedUser().getId(), user.getId(), relatedIds);
         if (maybeNextViewedUser.isEmpty()) {
-            TinderUser userWithNegativeChatId = new TinderUser();
-            userWithNegativeChatId.setId(-1);
-            user.setLastViewedUser(userWithNegativeChatId);
-            maybeNextViewedUser = tinderUserRepository.findNextRelatedUser(user);
+            maybeNextViewedUser = tinderUserRepository.findTopByIdGreaterThanAndIdNotAndIdIn(-1, user.getId(), relatedIds);
         }
         TinderUser nextViewedUser = maybeNextViewedUser
                 .orElseThrow(() -> new NotFoundException("User with chatId %s have not next viewed user".formatted(chatId)));
@@ -115,18 +114,21 @@ public class TinderUserServiceImpl implements TinderUserService {
 
     @Override
     public TinderUserDto getPreviousView(String chatId) {
-        TinderUser user = tinderUserRepository.getUserByChatId(chatId);
-        Optional<TinderUser> maybePreviousViewedUser = tinderUserRepository.findPreviousRelatedUser(user);
+        TinderUser user = getUserByChatId(chatId);
+        List<Integer> relatedIds = tinderUserRepository.findRelatedIds(user.getId());
+        Optional<TinderUser> maybePreviousViewedUser = tinderUserRepository.findTopByIdLessThanAndIdNotAndIdIn(user.getLastViewedUser().getId(), user.getId(), relatedIds);
         if (maybePreviousViewedUser.isEmpty()) {
-            TinderUser userWithMaxChatId = new TinderUser();
-            userWithMaxChatId.setId(Integer.MAX_VALUE);
-            user.setLastViewedUser(userWithMaxChatId);
-            maybePreviousViewedUser = tinderUserRepository.findPreviousRelatedUser(user);
+            maybePreviousViewedUser = tinderUserRepository.findTopByIdLessThanAndIdNotAndIdIn(Integer.MAX_VALUE, user.getId(), relatedIds);
         }
         TinderUser previousViewedUser = maybePreviousViewedUser
                 .orElseThrow(() -> new NotFoundException("User with chatId %s have not previous viewed user".formatted(chatId)));
         user.setLastViewedUser(previousViewedUser);
         save(user);
         return converter.convert(previousViewedUser);
+    }
+
+    public TinderUser getUserByChatId(String chatId) {
+        return tinderUserRepository.findUserByChatId(chatId)
+                .orElseThrow(() -> new NotFoundException("User with chatId %s not found".formatted(chatId)));
     }
 }

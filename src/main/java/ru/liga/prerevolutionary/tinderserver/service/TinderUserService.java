@@ -1,6 +1,7 @@
 package ru.liga.prerevolutionary.tinderserver.service;
 
 import ru.liga.prerevolutionary.tinderserver.dto.TinderUserDto;
+import ru.liga.prerevolutionary.tinderserver.model.TinderUser;
 
 public interface TinderUserService {
 
@@ -17,4 +18,6 @@ public interface TinderUserService {
     TinderUserDto getNextView(String chatId);
 
     TinderUserDto getPreviousView(String chatId);
+
+    TinderUser getUserByChatId(String chatId);
 }

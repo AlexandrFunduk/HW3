@@ -16,21 +16,4 @@ public interface LikeRepository extends JpaRepository<Like, LikeId> {
             "WHERE (USER_ID = :#{#id.userId} and LIKE_ID = :#{#id.likedUserId} )" +
             "       or (USER_ID = :#{#id.likedUserId}  and LIKE_ID = :#{#id.userId})", nativeQuery = true)
     List<Like> findRelate(LikeId id);
-
-    //todo в репозитории должны быть только методы работы с бд, надо перенести этот метод выше, в сервис
-    default String getRelate(LikeId id) {
-        List<Like> relate = findRelate(id);
-        if (relate.isEmpty()) {
-            return "";
-        }
-        if (relate.size() == 1) {
-            if (id.getUserId().equals(relate.get(0).getId().getUserId())) {
-                return "Любим вами";
-            } else {
-                return "Вы любимы";
-            }
-        }
-        return "Взаимность";
-    }
-
 }
