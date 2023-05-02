@@ -21,6 +21,11 @@ import java.io.InputStream;
 @Component
 public class OldImageBuilder {
 
+    private static final String OLD_STANDARD_TT_REGULAR = "Old Standard TT Regular";
+    private static final Font MAX_SIZE_FONT_FOR_PLAIN_TEXT = new Font(OLD_STANDARD_TT_REGULAR, Font.PLAIN, 25);
+    private static final Font MAX_FOUNT_SIZE_FOR_NAME_WITH_SEX = new Font(OLD_STANDARD_TT_REGULAR, Font.PLAIN, 30);
+    private static final Font LIKE_FONT = new Font(OLD_STANDARD_TT_REGULAR, Font.BOLD, 25);
+    private static final Font HEADER_FONT = new Font(OLD_STANDARD_TT_REGULAR, Font.BOLD, 30);
     private final BufferedImage backgroundImage;
 
     public OldImageBuilder() {
@@ -28,9 +33,7 @@ public class OldImageBuilder {
             assert oldImage != null;
             this.backgroundImage = ImageIO.read(oldImage);
         } catch (IOException e) {
-            //todo лучше всегда перед ексепшеном выводить лог с кратким описанием что произошло
-            //todo минимальная конструкция для ексепшена такая -> throw new RuntimeException(e.getMessage(), e);
-            throw new RuntimeException(e);
+            throw new RuntimeException("Resource image/prerev-background.jpg can not read", e);
         }
     }
 
@@ -40,18 +43,12 @@ public class OldImageBuilder {
 
     public byte[] build(TinderUserDto user, String label) {
         TextImageImpl textImage = new TextImageImpl(backgroundImage.getWidth(), backgroundImage.getHeight(), new Margin(25, 20, 25, 20));
-        //todo likeFont + headerFont можно вынести в константы
-        //todo "Old Standard TT Regular" тоже можно вынести в константу
-        Font likeFont = new Font("Old Standard TT Regular", Font.BOLD, 25);
-        Font nameFont = new Font("Old Standard TT Regular", Font.PLAIN, 30);
-        Font headerFont = new Font("Old Standard TT Regular", Font.BOLD, 30);
-        Font plainFont = new Font("Old Standard TT Regular", Font.PLAIN, 25);
 
         textImage.write(backgroundImage, 0, 0)
                 .useTextWrapper(new GreedyTextWrapper())
                 .wrap(true);
         if (!"".equals(label)) {
-            textImage.withFont(likeFont)
+            textImage.withFont(LIKE_FONT)
                     .setTextAligment(Alignment.RIGHT)
                     .write(label);
         } else {
@@ -59,17 +56,15 @@ public class OldImageBuilder {
         }
 
         String sexWithName = user.getSex() + ", " + user.getName();
-        //todo ты всегда создаешь nameFont по шаблону, а потом подгоняешь его к sexWithName?
-        // нельзя сразу сделать нужный?
-        nameFont = TextImageHelper.autoDecrementSizeFontByWidth(textImage, nameFont, sexWithName);
+        Font optimalFountSizeForNameWithSex = TextImageHelper.autoDecrementSizeFontByWidth(textImage, MAX_FOUNT_SIZE_FOR_NAME_WITH_SEX, sexWithName);
         textImage.setTextAligment(Alignment.LEFT)
-                .withFont(nameFont)
+                .withFont(optimalFountSizeForNameWithSex)
                 .write(sexWithName)
                 .newLine()
-                .withFont(headerFont)
+                .withFont(HEADER_FONT)
                 .write(user.getHeader());
 
-        plainFont = TextImageHelper.autoDecrementSizeFontByHeight(textImage, plainFont, user.getDescription());
+        Font plainFont = TextImageHelper.autoDecrementSizeFontByHeight(textImage, MAX_SIZE_FONT_FOR_PLAIN_TEXT, user.getDescription());
         textImage.withFont(plainFont)
                 .write(user.getDescription());
 

@@ -27,7 +27,7 @@ public class LikeServiceImpl implements LikeService {
     @Override
     public String getRelated(String chatId, String anotherChatId) {
         LikeId likeId = getLikeId(chatId, anotherChatId);
-        return likeRepository.findRelate(likeId).orElse("");
+        return likeRepository.getRelate(likeId);
     }
 
     @Override

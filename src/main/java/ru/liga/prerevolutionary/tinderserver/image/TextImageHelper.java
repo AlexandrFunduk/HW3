@@ -12,15 +12,15 @@ import java.util.Optional;
 
 public class TextImageHelper {
     private static final TextWrapper wrapper = new GreedyTextWrapper();
-    //todo "String s" надо назвать параметр более осознано
-    public static Font autoDecrementSizeFontByWidth(TextImage textImage, Font maxSizeFont, String s) {
+
+    public static Font autoDecrementSizeFontByWidth(TextImage textImage, Font maxSizeFont, String textForAutosize) {
         //todo какая то сложная логика с рефлексией, точно нельзя сделать проще?
         Margin margin = (Margin) ReflectionHelper.getFieldValue(textImage, "margin");
         Integer leftMargin = Optional.ofNullable(margin).map(Margin::getLeft).orElse(0);
         Integer rightMargin = Optional.ofNullable(margin).map(Margin::getRight).orElse(0);
         int width = textImage.getWidth() - leftMargin - rightMargin;
         FontMetrics fm = ((TextImageImpl) textImage).getBufferedImage().getGraphics().getFontMetrics(maxSizeFont);
-        GlyphVector vector = maxSizeFont.createGlyphVector(fm.getFontRenderContext(), s);
+        GlyphVector vector = maxSizeFont.createGlyphVector(fm.getFontRenderContext(), textForAutosize);
         Shape outline = vector.getOutline(0, 0);
         double expectedWidth = outline.getBounds().getWidth();
         if (expectedWidth > width) {
